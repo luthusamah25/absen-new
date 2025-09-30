@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ABSENSI SISWA SD NEGERI 1 BANDUNG</title>
+  <style>
+    :root {
+      --primary: #007bff;
+      --danger: #dc3545;
+      --success: #28a745;
+      --bg-light: rgba(255,255,255,0.95);
+      --text-color: #222;
+      --card-bg: rgba(255,255,255,0.95);
+    }
+    body.dark {
+      --primary: #3399ff;
+      --danger: #ff4d4f;
+      --success: #52c41a;
+      --bg-light: rgba(20,20,20,0.9);
+      --text-color: #eee;
+      --card-bg: rgba(30,30,30,0.95);
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('sekolah.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text-color);
+    }
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(6px);
+      z-index: -1;
+    }
+
+    /* LOGIN */
+    #loginPage {
+      display: flex; justify-content: center; align-items: center; height: 100vh;
+    }
+    .login-box {
+      width: 350px; background: var(--card-bg);
+      padding: 30px 25px; border-radius: 14px; box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+      text-align: center; animation: fadeIn 0.6s ease;
+    }
+    .login-box h2 { margin-bottom: 20px; color: var(--text-color); }
+    .login-box input {
+      width: 100%; padding: 12px; margin: 10px 0;
+      border-radius: 8px; border: 1px solid #ccc; font-size: 14px;
+      transition: 0.2s; background: #fff;
+    }
+    body.dark .login-box input { background: #222; color: #eee; border-color: #444; }
+    .login-box input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 5px var(--primary); }
+    .login-box button {
+      width: 100%; padding: 12px; margin-top: 12px; border-radius: 8px;
+      border: none; background: var(--primary); color: #fff; font-size: 15px; font-weight: 600; cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .login-box button:hover { background: #0056b3; transform: scale(1.02); }
+    body.dark .login-box button:hover { background: #1a73e8; }
+    .link-btn { background: transparent !important; color: var(--primary) !important; text-decoration: underline; }
+    .error { color: var(--danger); margin-top: 10px; font-size: 14px; }
+
+    /* ABSENSI PAGE */
+    #absensiPage { display: none; }
+    header {
+      position: sticky; top: 0; display: flex; justify-content: space-between; align-items: center;
+      background: var(--card-bg); border-bottom: 2px solid var(--primary);
+      padding: 12px 20px; box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+    header h1 { font-size: 20px; margin: 0; color: var(--text-color); }
+    header button {
+      background: var(--danger); color: #fff; border: none; border-radius: 8px; padding: 8px 15px; cursor: pointer;
+      font-weight: 500; transition: 0.2s;
+    }
+    header button:hover { background: #a71d2a; }
+    .dark-toggle {
+      background: var(--primary); margin-left: 10px;
+    }
+    .dark-toggle:hover { background: #0056b3; }
+    main { padding: 25px; }
+
+    .card {
+      background: var(--card-bg); padding: 20px;
+      border-radius: 14px; margin: 0 auto 25px auto;
+      max-width: 1000px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      animation: fadeUp 0.5s ease;
+    }
+    .card h2 {
+      margin-top: 0; border-left: 5px solid var(--primary);
+      padding-left: 10px; font-size: 18px; color: var(--text-color);
+    }
+    input, select {
+      padding: 10px; border-radius: 8px; border: 1px solid #ccc;
+      margin: 5px 0; width: 100%; max-width: 280px; transition: 0.2s;
+    }
+    body.dark input, body.dark select { background: #222; color: #eee; border-color: #444; }
+    input:focus, select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 5px var(--primary); }
+    button {
+      padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; margin: 6px 6px 12px 0;
+      transition: 0.2s ease;
+    }
+    button:hover { transform: scale(1.03); opacity: 0.9; }
+    .add-btn { background: var(--primary); color: white; }
+    .export-btn { background: var(--success); color: white; }
+    .reset-btn { background: var(--danger); color: white; }
+
+    table {
+      width: 100%; border-collapse: collapse; margin-top: 15px; overflow: hidden; border-radius: 10px;
+    }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+    th { background: var(--primary); color: white; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    body.dark tr:nth-child(even) { background: #2a2a2a; }
+    tr:hover { background: #eef5ff; }
+    body.dark tr:hover { background: #333; }
+
+    @keyframes fadeIn { from {opacity:0; transform:scale(0.95);} to {opacity:1; transform:scale(1);} }
+    @keyframes fadeUp { from {opacity:0; transform:translateY(15px);} to {opacity:1; transform:translateY(0);} }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- LOGIN -->
+  <div id="loginPage">
+    <div class="login-box">
+      <h2>🔑 Login Absensi</h2>
+      <input type="text" id="username" placeholder="Username">
+      <input type="password" id="password" placeholder="Password">
+      <button onclick="login()">Login</button>
+      <button class="link-btn" onclick="showChangePass()">Ganti Password</button>
+      <p class="error" id="errorMsg"></p>
+      <div id="changePassBox" style="display:none;margin-top:15px;text-align:left;">
+        <h3 style="font-size:16px;">🔒 Ganti Password</h3>
+        <input type="password" id="oldPass" placeholder="Password lama">
+        <input type="password" id="newPass" placeholder="Password baru">
+        <button onclick="changePassword()">Simpan Password Baru</button>
+        <p class="error" id="passMsg"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABSENSI -->
+  <div id="absensiPage">
+    <header>
+      <div style="display:flex;align-items:center;">
+        <h1>📖 ABSENSI SISWA<br>SD NEGERI 1 BANDUNG</h1>
+      </div>
+      <div>
+        <button class="dark-toggle" onclick="toggleDarkMode()">🌙/☀️</button>
+        <button onclick="logout()">Logout</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- Form Absensi -->
+      <div class="card">
+        <h2>Form Absensi</h2>
+        <label>Nama:</label>
+        <input type="text" id="nama" placeholder="Masukkan nama siswa">
+        <label>Kelas:</label>
+        <input type="text" id="kelas" placeholder="Masukkan kelas siswa">
+        <button class="add-btn" onclick="absen()">+ Absen Hadir</button>
+      </div>
+
+      <!-- Filter -->
+      <div class="card">
+        <h2>Filter Data</h2>
+        <label>Pilih Kelas:</label>
+        <select id="filterKelas"><option value="">Semua</option></select>
+        <label>Tanggal Mulai:</label>
+        <input type="date" id="startDate">
+        <label>Tanggal Akhir:</label>
+        <input type="date" id="endDate">
+        <button class="add-btn" onclick="applyFilter()">Terapkan Filter</button>
+        <button class="reset-btn" onclick="clearFilter()">Reset</button>
+      </div>
+
+      <!-- Daftar Absensi -->
+      <div class="card">
+        <h2>Daftar Absensi</h2>
+        <button class="export-btn" onclick="exportAbsensi()">⬇ Export Excel</button>
+        <button class="reset-btn" onclick="resetAbsensi()">🗑 Reset Data</button>
+        <table>
+          <thead><tr><th>No</th><th>Nama</th><th>Kelas</th><th>Waktu</th></tr></thead>
+          <tbody id="absensiList"></tbody>
+        </table>
+      </div>
+
+      <!-- Grafik -->
+      <div class="card">
+        <h2>📊 Rekap Absensi</h2>
+        <canvas id="rekapChart" height="120"></canvas>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // === DARK MODE ===
+    function toggleDarkMode(){
+      document.body.classList.toggle("dark");
+      localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+    }
+    window.onload=()=>{
+      if(localStorage.getItem("darkMode")==="true"){ document.body.classList.add("dark"); }
+      if(localStorage.getItem("loggedIn")==="true"){ document.getElementById("loginPage").style.display="none"; document.getElementById("absensiPage").style.display="block"; loadAbsensi(); }
+    };
+
+    // === LOGIN SYSTEM ===
+    if(!localStorage.getItem("password")) localStorage.setItem("password","12345");
+
+    function showChangePass(){ 
+      let box=document.getElementById("changePassBox");
+      box.style.display=box.style.display==="none"?"block":"none";
+      document.getElementById("passMsg").textContent="";
+    }
+    function changePassword(){
+      const oldPass=document.getElementById("oldPass").value.trim();
+      const newPass=document.getElementById("newPass").value.trim();
+      const savedPass=localStorage.getItem("password");
+      if(oldPass!==savedPass){ document.getElementById("passMsg").textContent="❌ Password lama salah!"; return; }
+      if(newPass.length<4){ document.getElementById("passMsg").textContent="⚠ Minimal 4 karakter"; return; }
+      localStorage.setItem("password",newPass);
+      document.getElementById("passMsg").style.color="green";
+      document.getElementById("passMsg").textContent="✅ Password berhasil diganti!";
+    }
+    function login(){
+      const user=document.getElementById("username").value.trim();
+      const pass=document.getElementById("password").value.trim();
+      if(user==="admin" && pass===localStorage.getItem("password")){
+        localStorage.setItem("loggedIn","true");
+        document.getElementById("loginPage").style.display="none";
+        document.getElementById("absensiPage").style.display="block";
+        loadAbsensi();
+      } else { document.getElementById("errorMsg").textContent="❌ Username atau password salah!"; }
+    }
+    function logout(){ localStorage.removeItem("loggedIn"); location.reload(); }
+
+    // === ABSENSI ===
+    let absensi=[]; let chart;
+    function absen(){
+      const nama=document.getElementById("nama").value.trim();
+      const kelas=document.getElementById("kelas").value.trim();
+      if(!nama||!kelas){ alert("⚠ Nama & Kelas wajib diisi!"); return; }
+      absensi.push({nama,kelas,waktu:new Date().toISOString()});
+      saveAbsensi(); renderAbsensi();
+      document.getElementById("nama").value=""; document.getElementById("kelas").value="";
+    }
+    function renderAbsensi(){
+      const tbody=document.getElementById("absensiList"); tbody.innerHTML="";
+      const kelasFilter=document.getElementById("filterKelas").value;
+      const start=document.getElementById("startDate").value;
+      const end=document.getElementById("endDate").value;
+
+      let filtered=absensi.filter(s=>{
+        let t=s.waktu.slice(0,10); let ok=true;
+        if(kelasFilter && s.kelas!==kelasFilter) ok=false;
+        if(start && t<start) ok=false;
+        if(end && t>end) ok=false;
+        return ok;
+      });
+
+      filtered.forEach((s,i)=>{ tbody.innerHTML+=`<tr><td>${i+1}</td><td>${s.nama}</td><td>${s.kelas}</td><td>${new Date(s.waktu).toLocaleString("id-ID")}</td></tr>`; });
+
+      updateKelasOptions(); updateChart(filtered);
+    }
+    function updateKelasOptions(){
+      const select=document.getElementById("filterKelas");
+      let kelasUnik=[...new Set(absensi.map(s=>s.kelas))];
+      select.innerHTML=`<option value="">Semua</option>`+kelasUnik.map(k=>`<option value="${k}">${k}</option>`).join("");
+    }
+    function updateChart(data){
+      const rekap={}; data.forEach(s=>rekap[s.kelas]=(rekap[s.kelas]||0)+1);
+      if(chart) chart.destroy();
+      chart=new Chart(document.getElementById("rekapChart"),{
+        type:"bar",
+        data:{labels:Object.keys(rekap),datasets:[{label:"Jumlah Kehadiran",data:Object.values(rekap),backgroundColor:"#007bff"}]},
+        options:{scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}
+      });
+    }
+    function exportAbsensi(){
+      const data=[["No","Nama","Kelas","Waktu"]]; absensi.forEach((s,i)=>data.push([i+1,s.nama,s.kelas,new Date(s.waktu).toLocaleString("id-ID")]));
+      const ws=XLSX.utils.aoa_to_sheet(data); const wb=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb,ws,"Absensi"); XLSX.writeFile(wb,"absensi.xlsx");
+    }
+    function resetAbsensi(){ if(confirm("Reset semua data?")){ absensi=[]; saveAbsensi(); renderAbsensi(); } }
+    function saveAbsensi(){ localStorage.setItem("dataAbsensi",JSON.stringify(absensi)); }
+    function loadAbsensi(){ const data=localStorage.getItem("dataAbsensi"); if(data){ absensi=JSON.parse(data); renderAbsensi(); } }
+
+    // === FILTER BUTTONS ===
+    function applyFilter(){ renderAbsensi(); }
+    function clearFilter(){
+      document.getElementById("filterKelas").value="";
+      document.getElementById("startDate").value="";
+      document.getElementById("endDate").value="";
+      renderAbsensi();
+    }
+  </script>
+</body>
+</html>
